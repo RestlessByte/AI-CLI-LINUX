@@ -6,7 +6,7 @@ This program allows you to interact with the OpenAI API directly from the Linux 
 ## 👨🏽‍🔬 How to use?
 1. Install dependencies: 
 ```bash
-git clone git@github.com:RestlessByte/AutomatonTerminalForLINUX.git && bun install
+git clone git@github.com:RestlessByte/AITerminalLINUX.git && cd AITerminalLINUX && bun install
 cat <<EOF >> ~/.bashrc
 aiterminal() {
     path="$(pwd)"

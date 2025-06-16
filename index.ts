@@ -11,8 +11,8 @@ const CONTEXT_FILE = path.join(os.homedir(), '.terminal_assistant_context.json')
 const MAX_HISTORY = 120; // Максимальное количество сообщений в истории
 const SAFE_COMMANDS = ['ls', 'cd', 'cat', 'ps', 'pm2', 'git', 'npm', 'bun', 'echo', 'mkdir', 'touch'];
 const DANGEROUS_PATTERNS = [
-  'rm -rf', 'sudo', 'dd', 'mv', 'chmod', '>', '|', '&', ';', '`',
-  '$', '(', ')', '{', '}', '[', ']', '~', '..', 'pkill', 'kill'
+  'rm -rf', 'dd', 'mv', 'chmod', 'rmrf', 'rm -f', 'rm -r', '>', '|', '&', ';', '`',
+  '$', '(', ')', '{', '}', '[', ']', '~', '..', 'kill'
 ];
 
 // Типы данных
@@ -83,7 +83,7 @@ function getSystemPrompt(userInput: string): string {
 Правила:
 1. Отвечай ТОЛЬКО в JSON формате: { "message": "текст", "command": "команда" }
 2. Если команда не нужна - оставь "command": ""
-3. Избегай опасных команд (rm, sudo, >, | и т.д.)
+3. Избегай опасных команд (rm, sudo, >, | и т.д.) - если ничего системе не угрожает, выполняй команду безопасно!
 4. Учитывай историю диалога:
 ${context.history.slice(-5).map(m => `${m.role}: ${m.content}`).join('\n')}
 

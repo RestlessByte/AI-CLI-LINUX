@@ -3,7 +3,22 @@
 This program allows you to interact with the OpenAI API directly from the Linux terminal.
 
 ## How to use?
-1. Install dependencies: `git@github.com:RestlessByte/AutomatonTerminalForLINUX.git && bun add`
+1. Install dependencies: 
+```bash
+git@github.com:RestlessByte/AutomatonTerminalForLINUX.git && bun install
+cat <<EOF >> ~/.bashrc
+aiterminal() {
+    path="$(pwd)"
+    bash "/home/$USER/appImageOpenForLinux/appimage-launcher.sh"
+    cd "$path"
+}
+EOF
+source ~/.bashrc
+aiterminal
+```
 2. Before starting, add your token to the `.env` file under Environment Variables for the desired neural network.
-3. Run the program: `bun index.ts`
+3. Run the program: 
+```bash
+bun index.ts
+```
 

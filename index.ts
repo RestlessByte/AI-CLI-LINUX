@@ -8,7 +8,7 @@ import { usingAI } from './core/ai';
 const ai = home as any ? home : usingAI
 // Конфигурация
 const CONTEXT_FILE = path.join(os.homedir(), '.terminal_assistant_context.json');
-const MAX_HISTORY = 20; // Максимальное количество сообщений в истории
+const MAX_HISTORY = 120; // Максимальное количество сообщений в истории
 const SAFE_COMMANDS = ['ls', 'cd', 'cat', 'ps', 'pm2', 'git', 'npm', 'bun', 'echo', 'mkdir', 'touch'];
 const DANGEROUS_PATTERNS = [
   'rm -rf', 'sudo', 'dd', 'mv', 'chmod', '>', '|', '&', ';', '`',

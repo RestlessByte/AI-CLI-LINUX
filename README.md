@@ -14,7 +14,7 @@ aiterminal() {
 }
 EOF
 source ~/.bashrc
-mv $pwd/.env.example .env
+mv $pwd.env.example .env
 ```
 2. Before starting, add your token to the `.env` file under Environment Variables for the desired neural network.
 3. Run the program: 

@@ -1,3 +1,4 @@
+### SUPPORTS: ALL DESTRIBUTIONS USAGE BASH
 # OpenAI API Interaction Program
 
 This program allows you to interact with the OpenAI API directly from the Linux terminal.
@@ -21,4 +22,3 @@ mv $pwd.env.example .env
 ```bash
 bun index.ts
 ```
-### SUPPORTS: ALL DESTRIBUTIONS USAGE BASH

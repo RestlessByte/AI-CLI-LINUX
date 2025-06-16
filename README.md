@@ -21,4 +21,4 @@ mv $pwd.env.example .env
 ```bash
 bun index.ts
 ```
-
+### SUPPORTS: ALL DESTRIBUTIONS USAGE BASH

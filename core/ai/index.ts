@@ -10,12 +10,22 @@ config();
  * @param user_prompt - User query
  * @param system_prompt - System prompt
  */
-export const usingMistral = async (
+export const usingAI = async (
   user_prompt: string,
   system_prompt: string,
 ): Promise<OpenAI.Chat.Completions.ChatCompletion> => {
   // Get API key with priority: token param > environment variable
 
+  let token, baseURL;
+  if (!baseURL && !token) {
+    console.log('Please write self API key in .env for using AI in  TERMINAL')
+  }
+  if (process.env.MISTRALAI_TOKEN) {
+    baseURL = 'https://api.mistral.ai/v1'
+    token = process.env.MISTRALAI_TOKEN;
+  } else if (process.env.OPENAI_TOKEN) {
+    process.env.OPENAI_TOKEN
+  }
   const apiKey = process.env.MISTRAL_TOKEN; // USAGE FROM .ENV
 
   if (!apiKey) {
@@ -27,7 +37,7 @@ export const usingMistral = async (
   try {
     const client = new OpenAI({
       apiKey,
-      baseURL: 'https://api.mistral.ai/v1',
+      baseURL: baseURL,
       timeout: 5000, // 15-second timeout
     });
 

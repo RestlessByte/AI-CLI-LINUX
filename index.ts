@@ -4,8 +4,8 @@ import { execSync } from 'child_process';
 import * as fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { usingMistral } from './core/ai';
-const ai = home as any ? home : usingMistral
+import { usingAI } from './core/ai';
+const ai = home as any ? home : usingAI
 // Конфигурация
 const CONTEXT_FILE = path.join(os.homedir(), '.terminal_assistant_context.json');
 const MAX_HISTORY = 20; // Максимальное количество сообщений в истории

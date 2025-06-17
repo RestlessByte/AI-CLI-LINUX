@@ -1,4 +1,7 @@
-### 🐧 SUPPORTS: ALL DESTRIBUTIONS USAGE BASH
+### 🐧 SUPPORTS: ALL DESTRIBUTIONS USAGE BASH AND PACKAGE MANAGER
+## Requirement:
+- Package Manager **NPM**
+- Package Manager **BUN**
 # 🧠 OpenAI API Interaction Program
 This program allows you to interact with the OpenAI API directly from the Linux terminal.
 ## 👨🏽‍🔬 How to use?

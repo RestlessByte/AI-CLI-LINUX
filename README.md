@@ -22,28 +22,6 @@ This program allows you to interact with the OpenAI API directly from the Linux 
 git clone git@github.com:RestlessByte/AITerminalLINUX.git && cd AITerminalLINUX && bun install
 
 
-cat <<EOF >> ~/.bashrc
-
-
-aiterminal() {
-
-
-    path="$(pwd)"
-
-
-    bash "/home/$USER/appImageOpenForLinux/appimage-launcher.sh"
-
-
-    cd "$path"
-
-
-}
-
-
-EOF
-
-
-source ~/.bashrc
 
 
 mv $pwd.env.example .env

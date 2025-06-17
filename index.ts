@@ -5,16 +5,10 @@ import * as fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { usingAI } from './core/ai';
-const ai = home as any ? home : usingAI
+const ai = home as any ? home : usingAI;
 // Конфигурация
 const CONTEXT_FILE = path.join(os.homedir(), '.terminal_assistant_context.json');
 const MAX_HISTORY = 120; // Максимальное количество сообщений в истории
-const SAFE_COMMANDS = ['ls', 'cd', 'cat', 'ps', 'pm2', 'git', 'npm', 'bun', 'echo', 'mkdir', 'touch'];
-const DANGEROUS_PATTERNS = [
-  'rm -rf', 'dd', 'mv', 'chmod', 'rmrf', 'rm -f', 'rm -r', '>', '|', '&', ';', '`',
-  '$', '(', ')', '{', '}', '[', ']', '~', '..', 'kill'
-];
-
 // Типы данных
 interface MistralResponse {
   message: string;
@@ -83,12 +77,12 @@ function getSystemPrompt(userInput: string): string {
 Правила:
 1. Отвечай ТОЛЬКО в JSON формате: { "message": "текст", "command": "команда" }
 2. Если команда не нужна - оставь "command": ""
-3. Избегай опасных команд (rm, sudo, >, | и т.д.) - если ничего системе не угрожает, выполняй команду безопасно!
 4. Учитывай историю диалога:
-${context.history.slice(-5).map(m => `${m.role}: ${m.content}`).join('\n')}
-
+${context.history.slice(-5).map(m => `${m.role}: ${m.content}`).join('\n')},
+5. Если пользователь запросил от тебя какое либо действия и он запросил много действий - то пиши пожалуйста, одним блоком команд в терминал (Пример: ls && cd  ~/home)
 Запрос пользователя: ${userInput}`;
 }
+// 3. Избегай опасных команд (rm, sudo, >, | и т.д.) - если ничего системе не угрожает, выполняй команду безопасно!
 
 // Обработка команды с учетом контекста
 async function processWithMistral(input: string): Promise<MistralResponse> {
@@ -126,30 +120,34 @@ async function processWithMistral(input: string): Promise<MistralResponse> {
   }
 }
 
-// Безопасное выполнение команды
-async function executeCommandSafely(command: string): Promise<void> {
+// Безопасное выполнение команды с захватом вывода
+async function executeCommandSafely(command: string): Promise<{ stdout: string; stderr: string }> {
   try {
-    // Проверка безопасности
-    const isDangerous = DANGEROUS_PATTERNS.some(p => command.includes(p)) &&
-      !SAFE_COMMANDS.some(s => command.startsWith(s));
-
-    if (isDangerous) {
-      throw new Error(`Запрещённая команда: ${command}`);
-    }
-
-    // Выполнение команды
     console.log(`🚀 Выполняю: ${command}`);
-    execSync(command, {
-      stdio: 'inherit',
+    const output = execSync(command, {
+      stdio: ['ignore', 'pipe', 'pipe'], // Захватываем stdout и stderr
       cwd: context.workingDirectory,
       encoding: 'utf-8'
     });
 
+    console.log(output);
     console.log('✅ Успешно выполнено');
     updateWorkingDirectory();
-  } catch (error) {
-    console.error('❌ Ошибка выполнения:', error instanceof Error ? error.message : error);
-    throw error;
+    return { stdout: output, stderr: '' };
+  } catch (error: any) {
+    // Обработка ошибок выполнения команды
+    if (error.stdout) {
+      console.log(error.stdout);
+    }
+    if (error.stderr) {
+      console.error(error.stderr);
+    }
+    console.error('❌ Ошибка выполнения');
+    updateWorkingDirectory();
+    return {
+      stdout: error.stdout || '',
+      stderr: error.stderr || error.message
+    };
   }
 }
 
@@ -220,9 +218,12 @@ async function main() {
           console.log(`💬 ${response.message}`);
         }
 
-        // Выполнение команды
+        // Выполнение команды и сохранение результата
         if (response.command) {
-          await executeCommandSafely(response.command);
+          const result = await executeCommandSafely(response.command);
+          // Добавляем результат выполнения в историю
+          const systemMessage = `Команда: ${response.command}\nРезультат:\n${result.stdout}${result.stderr ? '\nОшибки:\n' + result.stderr : ''}`;
+          addToHistory('system', systemMessage);
         }
       } catch (error) {
         console.error('⚠️ Ошибка:', error instanceof Error ? error.message : error);
@@ -252,7 +253,10 @@ async function main() {
         }
 
         if (response.command) {
-          await executeCommandSafely(response.command);
+          const result = await executeCommandSafely(response.command);
+          // Добавляем результат выполнения в историю
+          const systemMessage = `Команда: ${response.command}\nРезультат:\n${result.stdout}${result.stderr ? '\nОшибки:\n' + result.stderr : ''}`;
+          addToHistory('system', systemMessage);
         }
       } catch (error) {
         console.error('⚠️ Ошибка:', error instanceof Error ? error.message : error);

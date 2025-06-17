@@ -1,3 +1,4 @@
+import { Loading } from '@ui/loading/loading';
 import { usingMistral as home } from '/home/localhost/main/telegram/hub/usingAI/mistral/index';
 import * as readline from 'readline';
 import { execSync } from 'child_process';
@@ -32,10 +33,10 @@ function loadContext(): void {
     if (fs.existsSync(CONTEXT_FILE)) {
       const data = fs.readFileSync(CONTEXT_FILE, 'utf-8');
       context = JSON.parse(data);
-      console.log(`📂 Загружен контекст из ${CONTEXT_FILE}`);
+      console.log(`📂 Loading contexts from ${CONTEXT_FILE}`);
     }
   } catch (error) {
-    console.warn('⚠️ Не удалось загрузить контекст:', error);
+    console.warn('⚠️ Failed loading contexts', error);
   }
 }
 
@@ -44,7 +45,9 @@ function saveContext(): void {
   try {
     fs.writeFileSync(CONTEXT_FILE, JSON.stringify(context, null, 2));
   } catch (error) {
-    console.warn('⚠️ Не удалось сохранить контекст:', error);
+    console.warn(`⚠️ Failed to save context:
+
+`, error);
   }
 }
 
@@ -52,9 +55,9 @@ function saveContext(): void {
 function updateWorkingDirectory(): void {
   try {
     context.workingDirectory = process.cwd();
-    console.log(`📂 Рабочая директория: ${context.workingDirectory}`);
+    console.log(`📂 Work Dir: ${context.workingDirectory}`);
   } catch (error) {
-    console.warn('⚠️ Не удалось обновить рабочую директорию:', error);
+    console.warn(`⚠️ Failed to restore production directory:`, error);
   }
 }
 
@@ -75,6 +78,7 @@ function getSystemPrompt(userInput: string): string {
 Дата: ${new Date().toLocaleString()}
   
 Правила:
+0. Ты говоришь с пользователем четко, адаптируясь к его языку (К примеру: "Hello" = Ты такде пишешь 'Hello, how I can you help?)
 1. Отвечай ТОЛЬКО в JSON формате: { "message": "текст", "command": "команда" }
 2. Если команда не нужна - оставь "command": ""
 4. Учитывай историю диалога:
@@ -99,7 +103,7 @@ async function processWithMistral(input: string): Promise<MistralResponse> {
     const jsonEnd = response.lastIndexOf('}') + 1;
 
     if (jsonStart === -1 || jsonEnd === 0) {
-      throw new Error('JSON не найден в ответе');
+      throw new Error('JSON no in response');
     }
 
     const jsonString = response.substring(jsonStart, jsonEnd);
@@ -123,7 +127,7 @@ async function processWithMistral(input: string): Promise<MistralResponse> {
 // Безопасное выполнение команды с захватом вывода
 async function executeCommandSafely(command: string): Promise<{ stdout: string; stderr: string }> {
   try {
-    console.log(`🚀 Выполняю: ${command}`);
+    console.log(`🚀 Work: ${command}`);
     const output = execSync(command, {
       stdio: ['ignore', 'pipe', 'pipe'], // Захватываем stdout и stderr
       cwd: context.workingDirectory,
@@ -131,7 +135,7 @@ async function executeCommandSafely(command: string): Promise<{ stdout: string; 
     });
 
     console.log(output);
-    console.log('✅ Успешно выполнено');
+    console.log('✅ Successefuly Done');
     updateWorkingDirectory();
     return { stdout: output, stderr: '' };
   } catch (error: any) {
@@ -142,7 +146,7 @@ async function executeCommandSafely(command: string): Promise<{ stdout: string; 
     if (error.stderr) {
       console.error(error.stderr);
     }
-    console.error('❌ Ошибка выполнения');
+    console.error('❌ Error executions');
     updateWorkingDirectory();
     return {
       stdout: error.stdout || '',
@@ -156,19 +160,19 @@ function handleSpecialCommands(input: string): boolean {
   const trimmed = input.trim().toLowerCase();
 
   if (trimmed === 'context') {
-    console.log('📋 История контекста:');
+    console.log('📋 history contexts:');
     console.log(context.history.map((m, i) => `${i + 1}. ${m.role}: ${m.content}`).join('\n'));
     return true;
   }
 
   if (trimmed === 'clear-context') {
     context.history = [];
-    console.log('🧹 Контекст очищен');
+    console.log('🧹 Content clean');
     return true;
   }
 
   if (trimmed === 'pwd') {
-    console.log(`📂 Текущая директория: ${context.workingDirectory}`);
+    console.log(`📂 Current dir: ${context.workingDirectory}`);
     return true;
   }
 
@@ -188,7 +192,7 @@ async function main() {
       output: process.stdout
     });
 
-    console.log('Терминальный ассистент (для выхода: exit, история: context)');
+    console.log('TERMINAL ASSISTANT FOR LINUX (for exit: exit, history: context)');
     updateWorkingDirectory();
 
     rl.on('line', async (input) => {
@@ -199,12 +203,6 @@ async function main() {
           rl.close();
           return;
         }
-
-        if (trimmedInput === 'prompt') {
-          console.log('prompt');
-          return;
-        }
-
         // Обработка специальных команд
         if (handleSpecialCommands(trimmedInput)) {
           return;
@@ -222,11 +220,11 @@ async function main() {
         if (response.command) {
           const result = await executeCommandSafely(response.command);
           // Добавляем результат выполнения в историю
-          const systemMessage = `Команда: ${response.command}\nРезультат:\n${result.stdout}${result.stderr ? '\nОшибки:\n' + result.stderr : ''}`;
+          const systemMessage = `Command: ${response.command}\nResult:\n${result.stdout}${result.stderr ? '\nОшибки:\n' + result.stderr : ''}`;
           addToHistory('system', systemMessage);
         }
       } catch (error) {
-        console.error('⚠️ Ошибка:', error instanceof Error ? error.message : error);
+        console.error('⚠️ Error:', error instanceof Error ? error.message : error);
       } finally {
         // Сохраняем контекст после каждой операции
         saveContext();
@@ -234,7 +232,7 @@ async function main() {
     });
 
     rl.on('close', () => {
-      console.log('👋 Программа завершена');
+      console.log('👋 Program finish');
       saveContext();
       process.exit(0);
     });
@@ -255,11 +253,11 @@ async function main() {
         if (response.command) {
           const result = await executeCommandSafely(response.command);
           // Добавляем результат выполнения в историю
-          const systemMessage = `Команда: ${response.command}\nРезультат:\n${result.stdout}${result.stderr ? '\nОшибки:\n' + result.stderr : ''}`;
+          const systemMessage = `Command: ${response.command}\nResult:\n${result.stdout}${result.stderr ? '\nОшибки:\n' + result.stderr : ''}`;
           addToHistory('system', systemMessage);
         }
       } catch (error) {
-        console.error('⚠️ Ошибка:', error instanceof Error ? error.message : error);
+        console.error('⚠️ Error:', error instanceof Error ? error.message : error);
       } finally {
         saveContext();
         process.exit(0);
@@ -270,6 +268,6 @@ async function main() {
 
 // Запуск программы
 main().catch(error => {
-  console.error('🔥 Критическая ошибка:', error);
+  console.error('🔥 Critical error:', error);
   process.exit(1);
 });

@@ -1,12 +1,11 @@
-import { Loading } from '@ui/loading/loading';
-import { usingMistral as home } from '/home/localhost/main/telegram/hub/usingAI/mistral/index';
+import { usingOpenAI as home } from '../../ai/core/ai';
 import * as readline from 'readline';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { usingAI } from './core/ai';
-const ai = home as any ? home : usingAI;
+import { usingOpenAI } from "./core"
+const ai = home as any ? await home : await usingOpenAI;
 // Конфигурация
 const CONTEXT_FILE = path.join(os.homedir(), '.terminal_assistant_context.json');
 const MAX_HISTORY = 120; // Максимальное количество сообщений в истории
@@ -78,7 +77,7 @@ function getSystemPrompt(userInput: string): string {
 Дата: ${new Date().toLocaleString()}
   
 Правила:
-0. Ты говоришь с пользователем четко, адаптируясь к его языку (К примеру: "Hello" = Ты такде пишешь 'Hello, how I can you help?)
+0. Ты говоришь с пользователем четко, адаптируясь к его языку (К примеру: "Hello" = Ты также пишешь 'Hello, how I can you help?)
 1. Отвечай ТОЛЬКО в JSON формате: { "message": "текст", "command": "команда" }
 2. Если команда не нужна - оставь "command": ""
 4. Учитывай историю диалога:
@@ -93,10 +92,15 @@ async function processWithMistral(input: string): Promise<MistralResponse> {
   addToHistory('user', input);
 
   try {
-    const response = (await ai(
-      `Запрос: ${input}`,
-      getSystemPrompt(input)
-    )).choices[0].message.content;
+    const response = await (ai(
+      {
+        user_prompt: `Запрос от пользователя: ${input}`,
+        system_prompt: `${getSystemPrompt(input)}`,
+        model: 'mistral-large-latest',
+        provider: 'MistralAI'
+      }
+
+    ).then(e => e?.choices[0].message.content));
 
     // Извлекаем JSON из ответа
     const jsonStart = response.indexOf('{');

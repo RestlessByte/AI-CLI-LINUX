@@ -1,9 +1,22 @@
+
+import { Mistral } from '@mistralai/mistralai';
 import { Ollama } from './../../../ollama-js/src/browser';
 // src/ai/mistral.ts
 import { config } from 'dotenv';
 import OpenAI from 'openai';
 // import { InferenceClient } from '@huggingface/inference';
 // Load environment variables
+
+/** @param [string] Get types all AI models */
+export type TypeModels = OpenAI.AllModels | Mistrall_AI_TypesAllModels | { other: string }
+type TypeProvider = 'MistralAI' | 'OpenAI' | 'OpenRouter' | 'Ollama' | 'HuggingFace'
+import ollama from 'ollama'
+import type { ChatCompletionCreateParamsBase } from 'openai/resources/chat/completions.mjs';
+import type { ChatCompletionUserMessageParam } from 'openai/resources.js';
+import type { Mistrall_AI_TypesAllModels } from './types/models/mistrall/type';
+
+config();
+// const HugginFace = new InferenceClient()
 /**
  * @params [example] -   await usingOpenAI({
     system_prompt: 'Напиши просто тест',
@@ -13,13 +26,6 @@ import OpenAI from 'openai';
     stream: false
   }).then(e => e?.choices[0].message.content)
  */
-export type TypeModels = OpenAI.AllModels | `mistral-large-latest` | false
-type TypeProvider = 'MistralAI' | 'OpenAI' | 'OpenRouter' | 'Ollama' | 'HuggingFace'
-import ollama from 'ollama'
-
-
-config();
-// const HugginFace = new InferenceClient()
 export const usingOpenAI = async (
   props: {
     user_prompt: string,
@@ -28,8 +34,12 @@ export const usingOpenAI = async (
     model: TypeModels,
     stream?: boolean,
     options?: {
+      apiKey?: string
       temperature?: number
       max_tokens?: number
+      model?: TypeModels
+      createParams?: ChatCompletionCreateParamsBase
+      messageParams?: ChatCompletionUserMessageParam
     }
   }
 ): Promise<OpenAI.Chat.Completions.ChatCompletion | undefined> => {
@@ -37,22 +47,22 @@ export const usingOpenAI = async (
  * @param {string} using Open AI API for other AI powered
  * @param {string} for start work add TOKEN [API KEY] to .env in root directories
  */
-  // Fixed environment variable name (MISTRALAI_TOKEN instead of MISTRALLAI_TOKEN)
+  // Fixed environment variable name (MISTRALAIAPI_KEY instead of MISTRALLAI_API_KEY)
   let token, message, json, client;
   let baseURL: string | undefined = undefined;
   // Set baseURL only for Mistral models
   if (props.provider == 'MistralAI') {
-    token = process.env.MistralAI_TOKEN
+    token = process.env.MistralAI_API_KEY
     baseURL = 'https://api.mistral.ai/v1';
   }
   if (props.provider == 'OpenRouter') {
-    token = process.env.OpenRouter_TOKEN
+    token = process.env.OpenRouter_API_KEY
     baseURL = 'https://openrouter.ai/api/v1'
   }
-  if (props.provider == 'Ollama' && props.model == false) {
+  if (props.provider == 'Ollama') {
     token = 'Ollama'
     const response = await ollama.chat({
-      model: 'deepseek-r1:latest', messages: [{
+      model: props.model, messages: [{
         role: 'user',
         content: props.user_prompt
       },

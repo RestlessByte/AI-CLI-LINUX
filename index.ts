@@ -1,4 +1,4 @@
-import { usingOpenAI as home } from '../../ai/core/ai';
+import { usingOpenAI as home } from '../../ai/core';
 import * as readline from 'readline';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
@@ -8,7 +8,7 @@ import { usingOpenAI } from "./core"
 const ai = home as any ? await home : await usingOpenAI;
 // Конфигурация
 const CONTEXT_FILE = path.join(os.homedir(), '.terminal_assistant_context.json');
-const MAX_HISTORY = 120; // Максимальное количество сообщений в истории
+const MAX_HISTORY = 220; // Максимальное количество сообщений в истории
 // Типы данных
 interface MistralResponse {
   message: string;

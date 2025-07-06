@@ -1,10 +1,10 @@
-import { usingOpenAI as home, usingOpenAI } from '../../ai/core';
+import { usingAI } from 'usingAI';
 import * as readline from 'readline';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
 import os from 'os';
 import path from 'path';
-const ai = usingOpenAI;
+import { usingOpenAI } from './core';
 // Конфигурация
 const CONTEXT_FILE = path.join(os.homedir(), '.terminal_assistant_context.json');
 const MAX_HISTORY = 220; // Максимальное количество сообщений в истории
@@ -13,7 +13,6 @@ interface MistralResponse {
   message: string;
   command: string;
 }
-
 interface Context {
   history: Array<{ role: string; content: string }>;
   workingDirectory: string;
@@ -91,12 +90,12 @@ async function processWithMistral(input: string): Promise<MistralResponse> {
   addToHistory('user', input);
 
   try {
-    const response = await (ai(
+    const response = await (usingOpenAI(
       {
-        user_prompt: `Запрос от пользователя: ${input}`,
+        user_prompt: `${input}`,
         system_prompt: `${getSystemPrompt(input)}`,
-        model: 'ministral-8b-latest',
-        provider: 'MistralAI'
+        model: 'accounts/fireworks/models/deepseek-r1',
+        provider: 'Fireworks', options: { apiKey: 'fw_3ZRj4eGwtJBfbnU1ii6M1GwP' }
       }
 
     ).then(e => e?.choices[0].message.content));

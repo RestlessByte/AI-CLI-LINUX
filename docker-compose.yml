@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      - isProduction = true
+      - TELEGRAM_BOT_AI_HUB_TEST=
+      - TELEGRAM_BOT_AI_HUB=
+      - Yoo_SECRET_KEY_PRODUCTION=
+      - Yoo_SHOP_ID_PRODUCTION=
+      - Yoo_SECRET_KEY_TEST=
+      - Yoo_SHOP_ID_TEST=
+      - Fireworks_API_KEY=
+      - OpenRouter_API_KEY=
+      - MistralAI_API_KEY= 
+      - DB_USER=postgres
+      - DB_PASSWORD=dfdfdss
+      - DB_PORT=5432
+      - DB_HOST=127.0.0.1
+    volumes:
+      - ./:/app
+    command: ["bun", "run", "index.ts"]
+
+  db:
+    image: postgres:17.5
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: qwe245fgsbfgt#^%Dw!ed
+      POSTGRES_DB: ai
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./db/postgresql/postgresql.sql:/docker-entrypoint-initdb.d/backup.sql
+
+volumes:
+  db-data:

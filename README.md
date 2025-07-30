@@ -32,12 +32,13 @@ EOF
 ```
 ## 👥 For Whom?
 This script is intended for:
-- **Developers**
-- **DevOPS**
-- **AICoders**
-- **Scientist**
-- **SysAdmin**
-- **CyberSecurity**
+- **🐧 Novice LINUXOID**
+- **👨🏽‍💻 Developers**
+- **🔧 DevOPS**
+- **✨ AICoders**
+- **👨🏾‍🔬 Scientist || Analytics**
+- **👨‍🔧 SysAdmin**
+- **🔐 CyberSecurity**
 ## 🌟 Features
 - **AI Powered from LINUX TERMINAL!**
 - **Has memory of the result of a certain command**

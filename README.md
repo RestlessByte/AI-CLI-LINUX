@@ -3,6 +3,7 @@
 - **Package Manager NPM**
 - **Package Manager BUN**
 - **Ethernet**
+- **Open AI API hub - [git@github.com:RestlessByte/usingOpenAI.git]**
 # 🧠 OpenAI API Interaction Program
 This program allows you to interact with the OpenAI API directly from the Linux terminal.
 ## 👨🏽‍🔬 How to use?

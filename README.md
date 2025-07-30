@@ -9,7 +9,8 @@ This program allows you to interact with the OpenAI API directly from the Linux 
 1. Install dependencies:
 ```bash
 git clone git@github.com:RestlessByte/AITerminalLINUX.git
-cd AITerminalLINUX 
+cd AITerminalLINUX
+git clone git@github.com:RestlessByte/usingOpenAI.git
 bun install
 mv $pwd.env.example .env
 ```

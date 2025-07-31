@@ -1,4 +1,5 @@
-### 🐧 SUPPORTS: ALL DESTRIBUTIONS USAGE BASH AND PACKAGE MANAGER
+# CLI ASSISTANT FOR LINUX
+### 🐧 SUPPORTS: ALL DESTRIBUTIONS USAGE BASH AND PACKAGE MANAGER 
 ## Requirement:
 - **Package Manager NPM**
 - **Package Manager BUN**
@@ -11,15 +12,15 @@ This program allows you to interact with the OpenAI API directly from the Linux 
 ```bash
 #!/bin/bash
 
-path=$(pwd)
-cd ~
+original_dir=$(pwd)
+cd ~ || exit
 git clone git@github.com:RestlessByte/AI-CLI-LINUX.git
-cd AI-CLI
+cd AI-CLI-LINUX || exit
 git clone git@github.com:RestlessByte/usingOpenAI.git
 bun install
-mv $pwd.env.example .env
+mv .env.example .env
 code .env
-cd '$path'
+cd "$original_dir" || exit
 ```
 2. 🧸 Before starting, add your token to the `.env` file under Environment Variables for the desired neural network.
 3. ✨ Run the program:

@@ -31,11 +31,12 @@ bun index.ts
 ```bash
 #!/bin/bash
 cat >> ~/.bashrc << 'EOF'
-function aiterminal(){
+function aiterminal() {
   path=$(pwd)
-  cd ~/AI-CLI-LINUX/ || return
+  cd ~/AI-CLI-LINUX || return
   bun index.ts
   cd "$path" || return
+}
 }
 EOF
 ```

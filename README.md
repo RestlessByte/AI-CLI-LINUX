@@ -12,6 +12,7 @@ This program allows you to interact with the OpenAI API directly from the Linux 
 #!/bin/bash
 
 path=$(pwd)
+cd ~
 git clone git@github.com:RestlessByte/AI-CLI.git
 cd AI-CLI
 git clone git@github.com:RestlessByte/usingOpenAI.git

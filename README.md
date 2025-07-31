@@ -1,6 +1,7 @@
 # CLI ASSISTANT FOR LINUX
 ### 🐧 SUPPORTS: ALL DESTRIBUTIONS USAGE BASH AND PACKAGE MANAGER 
 ## Requirement:
+- **Docker [if no want usage bun]** 
 - **Package Manager NPM**
 - **Package Manager BUN**
 - **Ethernet**

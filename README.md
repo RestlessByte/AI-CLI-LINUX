@@ -13,7 +13,7 @@ This program allows you to interact with the OpenAI API directly from the Linux 
 
 path=$(pwd)
 cd ~
-git clone git@github.com:RestlessByte/AI-CLI.git
+git clone git@github.com:RestlessByte/AI-CLI-LINUX.git
 cd AI-CLI
 git clone git@github.com:RestlessByte/usingOpenAI.git
 bun install
@@ -32,7 +32,7 @@ bun index.ts
 cat >> ~/.bashrc << 'EOF'
 function aiterminal(){
   path=$(pwd)
-  cd ~/AI-CLI/ || return
+  cd ~/AI-CLI-LINUX/ || return
   bun index.ts
   cd "$path" || return
 }
